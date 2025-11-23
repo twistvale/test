@@ -1,81 +1,180 @@
+<!-- Full portfolio layout with liquid-glass bubble nav effect applied -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vale — Portfolio (Liquid Glass Bubble)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+  <title>Vale — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700&display=swap" rel="stylesheet" />
   <style>
-    body{margin:0;font-family:"Sora",sans-serif;background:#000;color:#fff;height:200vh;overflow-x:hidden}
-    
-    /* liquid glass bubble */
-    .glass-bubble{
-      position:fixed;
-      top:0;left:0;
-      width:260px;height:260px;
-      border-radius:50%;
-      background:rgba(255,255,255,0.15);
-      backdrop-filter:blur(28px) saturate(180%);
-      -webkit-backdrop-filter:blur(28px) saturate(180%);
-      pointer-events:none;
-      mix-blend-mode:overlay;
-      opacity:0;
-      transition:opacity .4s ease;
+    :root {
+      --cream: #f4d9b1;
+      --cream-soft: #e6c59c;
+      --coffee-dark: #1a120d;
+      --coffee-mid: #2b1a12;
+      --glass-bg: rgba(255,255,255,0.06);
+      --text: #ffffff;
+      --muted: #c4b6a7;
     }
-    
-    header{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
-    nav{position:fixed;top:0;width:100%;padding:20px;text-align:center;z-index:10}
-    nav a{color:#ccc;margin:0 20px;text-decoration:none;font-weight:300}
-    
-    section{padding:160px 30px;max-width:900px;margin:0 auto}
-    h3{font-size:2.4rem;margin-bottom:20px}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Sora", sans-serif;
+      background: radial-gradient(circle at 20% 0%, var(--cream) 0%, var(--coffee-mid) 35%, var(--coffee-dark) 90%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: center;
+      backdrop-filter: blur(18px);
+      background: rgba(0,0,0,0.15);
+      z-index: 1000;
+    }
+    .nav-inner {
+      display: flex;
+      gap: 40px;
+      position: relative;
+    }
+    nav a {
+      text-decoration: none;
+      font-size: 1rem;
+      color: var(--muted);
+      position: relative;
+      padding: 8px 16px;
+      z-index: 2;
+    }
+
+    /* Liquid Glass Bubble */
+    .glass-bubble {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 70px;
+      height: 38px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(18px);
+      border-radius: 20px;
+      pointer-events: none;
+      transition: transform 0.22s cubic-bezier(.22,.61,.36,1), width 0.22s ease;
+      z-index: 1;
+      opacity: 0;
+    }
+
+    /* HERO */
+    header {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    h1 {
+      font-size: 5rem;
+      background: linear-gradient(90deg, var(--cream-soft), var(--cream));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h2 {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 1.7rem;
+    }
+
+    /* SECTIONS */
+    section {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 160px 30px;
+    }
+    h3 {
+      font-size: 2.4rem;
+      color: var(--cream);
+      margin-bottom: 30px;
+    }
+
+    .project {
+      background: var(--glass-bg);
+      padding: 30px;
+      border-radius: 18px;
+      margin-bottom: 35px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.35s ease;
+    }
+    .project:hover {
+      transform: translateY(-10px) scale(1.02);
+      background: rgba(255,255,255,0.12);
+    }
+
+    footer {
+      text-align: center;
+      padding: 70px 20px;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
 
-<nav>
-  <a href="#about">About</a>
-  <a href="#projects">Projects</a>
-  <a href="#contact">Contact</a>
-</nav>
+  <nav>
+    <div class="nav-inner" id="navInner">
+      <div class="glass-bubble" id="bubble"></div>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
 
-<div class="glass-bubble" id="bubble"></div>
+  <header>
+    <h1>Hey! I'm Vale.</h1>
+    <h2>Developer • Designer • Builder</h2>
+  </header>
 
-<header>
-  <h1>Hey! I'm Vale.</h1>
-  <h2>Developer • Designer • Builder</h2>
-</header>
+  <section id="about">
+    <h3>About Me</h3>
+    <p>Hey! I'm Vale — a part-time programmer who loves building small projects, experimenting with C++, and creating clean visual designs. I'm also working on a small original game. Spoilers soon...</p>
+  </section>
 
-<section id="about">
-  <h3>About Me</h3>
-  <p>Lorem ipsum text here.</p>
-</section>
+  <section id="projects">
+    <h3>Projects</h3>
+    <div class="project">
+      <h4>Project 1 — Surreal</h4>
+      <p>Surreal is my own little game made in Godot using C++ and GDScript. Started as a boredom project and became something real quickly.</p>
+    </div>
+    <div class="project"><h4>Project 2 — Coming Soon</h4></div>
+    <div class="project"><h4>Project 3 — Coming Soon</h4></div>
+  </section>
 
-<section id="projects">
-  <h3>Projects</h3>
-  <p>Your projects here...</p>
-</section>
+  <section id="contact">
+    <h3>Contact</h3>
+    <p>Email: valetwisted@gmail.com</p>
+  </section>
 
-<section id="contact">
-  <h3>Contact</h3>
-  <p>Email: example@mail.com</p>
-</section>
+  <footer>© Vale — Portfolio</footer>
 
 <script>
-  const bubble = document.getElementById('bubble');
-  
-  function inTopSection(y){
-    // top area = header + nav region
-    return y < window.innerHeight * 0.75;
-  }
+  const bubble = document.getElementById("bubble");
+  const navInner = document.getElementById("navInner");
+  const links = navInner.querySelectorAll("a");
 
-  document.addEventListener('mousemove', e => {
-    if(inTopSection(window.scrollY)){
+  links.forEach(link => {
+    link.addEventListener("mouseenter", e => {
+      const rect = e.target.getBoundingClientRect();
+      const parentRect = navInner.getBoundingClientRect();
+
       bubble.style.opacity = 1;
-      bubble.style.transform = `translate(${e.clientX - 130}px, ${e.clientY - 130}px)`;
-    } else {
-      bubble.style.opacity = 0;
-    }
+      bubble.style.width = rect.width + 20 + "px";
+      bubble.style.transform = `translate(${rect.left - parentRect.left - 10}px, 0px)`;
+    });
+  });
+
+  navInner.addEventListener("mouseleave", () => {
+    bubble.style.opacity = 0;
   });
 </script>
 
