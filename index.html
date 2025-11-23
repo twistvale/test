@@ -33,19 +33,32 @@
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       overflow-x:hidden;
-      /* layered blended coffee + soft nebula tint for depth */
+      /* improved coffee blend:
+         - warm base gradient
+         - subtle nebula tint overlay
+         - light vignette for focus
+      */
       background:
-        radial-gradient(1000px 500px at 10% 8%, rgba(255,220,170,0.055), transparent 22%),
-        radial-gradient(800px 600px at 92% 78%, rgba(200,120,255,0.02), transparent 20%),
-        linear-gradient(140deg, var(--cream), var(--coffee-mid) 36%, var(--coffee-dark) 100%);
+        radial-gradient(950px 480px at 8% 8%, rgba(255,220,170,0.06), transparent 16%),
+        radial-gradient(700px 520px at 92% 78%, rgba(200,120,255,0.02), transparent 20%),
+        linear-gradient(140deg, #f7e0bb 0%, #e2c39a 14%, #c79b6a 30%, var(--coffee-mid) 60%, var(--coffee-dark) 100%);
       transition: background 700ms ease;
     }
 
-    /* canvas particles container */
-    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:0.18}
+    /* subtle grain overlay using pseudo-element on body */
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:0.03;
+      background-image:linear-gradient( rgba(0,0,0,0.01) 1px, transparent 1px );
+      background-size:100% 2px;
+      z-index:1;
+      mix-blend-mode:overlay;
+    }
+
+    /* canvas particles container (global) */
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:0.14}
 
     /* decorative blobs */
-    .blob{position:fixed;border-radius:50%;filter:blur(160px);pointer-events:none;opacity:0.26;will-change:transform}
+    .blob{position:fixed;border-radius:50%;filter:blur(160px);pointer-events:none;opacity:0.26;will-change:transform;z-index:1}
     .blob.b1{width:520px;height:520px;left:-220px;top:-160px;background:rgba(255,220,160,0.12)}
     .blob.b2{width:600px;height:600px;right:-220px;bottom:-160px;background:rgba(200,140,255,0.08)}
     .blob.b3{width:380px;height:380px;right:30%;top:24%;background:rgba(255,170,110,0.06)}
@@ -88,14 +101,19 @@
       font-size:clamp(36px,8vw,72px);line-height:0.96;font-weight:700;
       background:linear-gradient(90deg,var(--cream-soft),var(--cream));-webkit-background-clip:text;color:transparent;
       transition:text-shadow var(--transition-med);
-      /* soft glow / gentle pulse */
+      /* soft glow (base) */
       text-shadow: 0 6px 28px rgba(217,160,100,0.06);
+      position:relative;
+      z-index:3;
     }
     /* animated subtle glow pulse */
-    @keyframes namePulse { 0%{text-shadow:0 6px 18px rgba(217,160,100,0.04)}50%{text-shadow:0 9px 36px rgba(217,160,100,0.09)}100%{text-shadow:0 6px 18px rgba(217,160,100,0.04)} }
+    @keyframes namePulse { 0%{text-shadow:0 6px 18px rgba(217,160,100,0.04)}50%{text-shadow:0 10px 40px rgba(217,160,100,0.10)}100%{text-shadow:0 6px 18px rgba(217,160,100,0.04)} }
     h1.pulse{animation:namePulse 3.6s ease-in-out infinite}
 
     h2{margin-top:14px;color:var(--muted);font-weight:300}
+
+    /* name particle canvas sits over header, but behind text for glow */
+    #nameParticles{position:absolute;left:50%;top:45%;transform:translate(-50%,-45%);pointer-events:none;z-index:2}
 
     /* sections */
     section{max-width:1050px;margin:0 auto;padding:90px 22px;position:relative;z-index:2}
@@ -143,6 +161,12 @@
     .reveal{opacity:0;transform:translateY(18px);transition:opacity 680ms cubic-bezier(.2,.9,.3,1),transform 680ms cubic-bezier(.2,.9,.3,1)}
     .reveal-visible{opacity:1;transform:translateY(0)}
 
+    /* contact row style */
+    .contact-row{display:flex;gap:10px;align-items:center}
+
+    /* discord icon size */
+    .discord-icon{width:20px;height:20px;display:inline-block;vertical-align:middle}
+
     /* responsive */
     @media (max-width:920px){
       nav{inset:auto 12px 0 12px}
@@ -155,12 +179,13 @@
       section{padding:48px 18px}
       .card::after{display:none}
       #particles{opacity:0.10}
+      #nameParticles{display:none} /* disable expensive hero particles on tiny screens */
     }
   </style>
 </head>
 <body>
 
-  <!-- particles canvas -->
+  <!-- global particles canvas -->
   <canvas id="particles"></canvas>
 
   <!-- soft blended blobs -->
@@ -180,6 +205,9 @@
 
   <!-- HERO -->
   <header>
+    <!-- name particle canvas — sits under the text so particles glow behind and around it -->
+    <canvas id="nameParticles" width="900" height="220" aria-hidden="true" style="position:absolute;left:50%;top:41%;transform:translate(-50%,-41%);pointer-events:none;z-index:2"></canvas>
+
     <h1 id="name">Hey! I'm Vale.</h1>
     <h2>Developer • Designer • Builder</h2>
   </header>
@@ -227,7 +255,17 @@
   <!-- CONTACT -->
   <section id="contact" class="glass reveal">
     <h3>Contact</h3>
-    <p>Email: valetwisted@gmail.com</p>
+    <div class="contact-row">
+      <!-- inline discord SVG icon + username (falls back visually to simple text on old browsers) -->
+      <svg class="discord-icon" viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
+        <g fill="none" fill-rule="evenodd">
+          <path d="M60.104 4.5A58.6 58.6 0 0046.858.5 39.22 39.22 0 0041.47.5c-.21.34-.447.833-.614 1.184-1.89 4.3-3.995 8.35-5.71 12.212-7.54.54-9.78.54-17.35 0-1.724-3.88-3.85-7.9-5.76-12.2C22.78.832 22.55.34 22.34 0a39.22 39.22 0 00-5.39 0A58.6 58.6 0 005.325 4.5C.98 18.1-.418 31.6.8 44.884 15.206 52 29.743 54 44.9 54c15.16 0 29.7-2 43.5-9.116C71.42 31.6 69.97 18.1 60.104 4.5z" fill="#7289DA"/>
+          <path d="M47.969 36.5c-2.05 0-3.75-1.89-3.75-4.21 0-2.33 1.66-4.22 3.75-4.22 2.08 0 3.78 1.89 3.78 4.22 0 2.32-1.7 4.21-3.78 4.21zm-25.9 0c-2.05 0-3.75-1.89-3.75-4.21 0-2.33 1.66-4.22 3.75-4.22 2.08 0 3.78 1.89 3.78 4.22 0 2.32-1.7 4.21-3.78 4.21z" fill="#FFFFFF" opacity="0.98"/>
+        </g>
+      </svg>
+      <div style="color:var(--text);opacity:0.95">twistoox</div>
+    </div>
+    <p style="margin-top:12px;color:var(--muted)">Email: valetwisted@gmail.com</p>
   </section>
 
   <footer>© Vale — Portfolio</footer>
@@ -239,7 +277,6 @@
       if(!canvas) return;
       const ctx = canvas.getContext('2d');
       let w=canvas.width=innerWidth, h=canvas.height=innerHeight;
-      // lower particle count on small screens
       const isMobile = innerWidth < 700;
       const P = isMobile ? 36 : 84;
       const particles = [];
@@ -273,6 +310,79 @@
       addEventListener('resize', ()=>{ w=canvas.width=innerWidth; h=canvas.height=innerHeight; });
     })();
 
+    /* ---------------- name particle ring + glow ---------------- */
+    (function(){
+      const canvas = document.getElementById('nameParticles');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      // adapt size to viewport / hero text
+      function resize(){
+        const baseW = Math.min(innerWidth * 0.92, 960);
+        const baseH = Math.min(240, innerHeight * 0.32);
+        canvas.width = baseW;
+        canvas.height = baseH;
+        canvas.style.width = baseW + 'px';
+        canvas.style.height = baseH + 'px';
+        // center is half width/height
+      }
+      resize(); window.addEventListener('resize', resize);
+
+      const isMobile = innerWidth < 700;
+      if(isMobile) {
+        // reduce particles on mobile for perf
+      }
+      const count = isMobile ? 18 : 48;
+      const particles = [];
+      for(let i=0;i<count;i++){
+        const angle = Math.random() * Math.PI * 2;
+        const radius = (Math.min(canvas.width, canvas.height) * 0.28) + (Math.random()*18 - 8);
+        particles.push({
+          angle,
+          radius,
+          speed: (0.0006 + Math.random()*0.0010) * (Math.random() > 0.5 ? 1 : -1),
+          size: Math.random()*1.6 + 0.6,
+          offset: (Math.random()*6 - 3)
+        });
+      }
+
+      let last = performance.now();
+      function draw(now){
+        const dt = now - last; last = now;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        // center: align with text center
+        const rect = document.getElementById('name').getBoundingClientRect();
+        // compute global offset wrt canvas
+        // position of canvas on page:
+        const canvasRect = canvas.getBoundingClientRect();
+        const cx = rect.left + rect.width/2 - canvasRect.left;
+        const cy = rect.top + rect.height/2 - canvasRect.top;
+
+        // soft radial glow
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height)*0.7);
+        g.addColorStop(0, 'rgba(217,160,100,0.12)');
+        g.addColorStop(0.2, 'rgba(217,160,100,0.06)');
+        g.addColorStop(1, 'rgba(217,160,100,0.0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        // small particles orbiting + twinkle
+        for(const p of particles){
+          p.angle += p.speed * dt;
+          const x = cx + Math.cos(p.angle) * p.radius + (Math.sin(now/1200 + p.offset) * 1.8);
+          const y = cy + Math.sin(p.angle) * p.radius + (Math.cos(now/1000 + p.offset) * 1.2);
+          const size = p.size * (1 + 0.3*Math.sin(now/300 + p.offset));
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,235,195,${0.3 + Math.abs(Math.sin(now/700 + p.offset))*0.5})`;
+          ctx.arc(x,y,size,0,Math.PI*2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+    })();
+
     /* ---------------- nav bubble with inertia + stretch ---------------- */
     (function(){
       const bubble = document.getElementById('bubble');
@@ -291,14 +401,10 @@
           target.w = Math.max(48, r.width + 16);
           target.opacity = 1;
         });
-        link.addEventListener('mouseleave', ()=> {
-          // leave handled by parent to allow moving between links smoothly
-        });
       });
 
       nav.addEventListener('mouseleave', ()=> { target.opacity = 0; });
 
-      // animate
       (function animate(){
         current.x = lerp(current.x, target.x, 0.22);
         current.w = lerp(current.w, target.w, 0.22);
@@ -317,7 +423,6 @@
         entries.forEach(en => {
           if(en.isIntersecting){
             en.target.classList.add('reveal-visible');
-            // add small stagger to cards
             if(en.target.classList.contains('glass')){
               const cards = en.target.querySelectorAll('.card');
               cards.forEach((c,i)=> setTimeout(()=> c.classList.add('reveal-visible'), i*90));
@@ -372,8 +477,12 @@
       function optimize(){
         if(innerWidth < 700){
           document.getElementById('particles').style.opacity = '0.10';
+          const np = document.getElementById('nameParticles');
+          if(np) np.style.display = 'none';
         } else {
-          document.getElementById('particles').style.opacity = '0.18';
+          document.getElementById('particles').style.opacity = '0.14';
+          const np = document.getElementById('nameParticles');
+          if(np) np.style.display = 'block';
         }
       }
       addEventListener('resize', optimize);
@@ -385,7 +494,6 @@
       const name = document.getElementById('name');
       if(name) {
         name.classList.add('pulse');
-        // keep the pulse but subtle; no further action
       }
     })();
   </script>
