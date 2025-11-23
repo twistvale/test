@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isaac — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #f4d9b1;
+      --cream-soft: #e6c59c;
+      --coffee-dark: #1a120d;
+      --coffee-mid: #2b1a12;
+      --coffee-glow: #d9a066;
+      --text: #ffffff;
+      --muted: #c4b6a7;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Sora", sans-serif;
+      background: url('https://media.discordapp.net/attachments/1393283813102190714/1442255559825948855/download.jpg') center/cover no-repeat fixed;
+      backdrop-filter: blur(8px);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* BLOBS DISABLED (no sections anymore) */
+
+    /* HERO / INTRO */
+    header {
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .ralsei-img {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255,255,255,0.15);
+      padding: 10px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 28px rgba(255,255,255,0.35);
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 4rem;
+      background: linear-gradient(90deg, var(--cream-soft), var(--cream));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* IMAGE GALLERY */
+    .gallery {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 120px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 18px;
+      transition: 0.35s ease;
+      box-shadow: 0 0 20px rgba(0,0,0,0.45);
+    }
+
+    .gallery img:hover {
+      transform: scale(1.10);
+      box-shadow: 0 0 25px rgba(255,255,255,0.5);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img class="ralsei-img" src="https://media.discordapp.net/attachments/1393283813102190714/1442255559431819405/20251014045944_1.jpg" alt="Ralsei">
+    <h1>Ralsei says — baaah–</h1>
+  </header>
+
+  <section class="gallery">
+    <img src="https://media.discordapp.net/attachments/1393283813102190714/1442255560220082316/IMG_1500.png" alt="">
+    <img src="https://media.discordapp.net/attachments/1393283813102190714/1442255559062585415/IMG_1711.png" alt="">
+    <img src="https://media.discordapp.net/attachments/1393283813102190714/1442255558664130603/IMG_1713.png" alt="">
+  </section>
+
+  <footer>
+    Images Copyright — Isaac
+  </footer>
+
+</body>
+</html>
