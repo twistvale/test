@@ -135,4 +135,367 @@
       position:relative;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
       border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.08);
       overflow:hidden;transition:transform 360ms cubic-bezier(.22,.61,.36,1),box-shadow 360ms,filter 360ms;
-      will
+      will-change:transform,filter;
+      cursor:default;
+    }
+    .card::after{content:"";position:absolute;right:-30px;top:-20px;width:160px;height:110px;border-radius:40px;background:radial-gradient(circle at 30% 30%, rgba(255,200,120,0.12), rgba(255,160,100,0.02));filter:blur(18px);pointer-events:none;opacity:0.85}
+    .card h4{color:var(--cream);margin-bottom:8px}
+    .card p{color:var(--text);opacity:0.95}
+
+    /* magnetic hover (card inner follows cursor) */
+    .card .card-inner{transition:transform 320ms cubic-bezier(.22,.61,.36,1);will-change:transform}
+
+    .card:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 22px 60px rgba(0,0,0,0.46);filter:contrast(1.02)}
+    .card:active{transform:translateY(-6px) scale(1.01)}
+
+    /* divider wave */
+    .divider{height:72px;overflow:hidden;margin-top:22px}
+    .divider svg{display:block;width:120%;height:100%;transform:translateX(-10%)}
+    .divider path{fill:rgba(255,255,255,0.03)}
+
+    /* neon footer line */
+    footer{padding:40px 22px;text-align:center;color:var(--muted);position:relative}
+    footer::before{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:120px;height:2px;background:linear-gradient(90deg, rgba(217,160,100,0.0), rgba(217,160,100,0.9), rgba(217,160,100,0.0));box-shadow:0 6px 18px rgba(217,160,100,0.12)}
+
+    /* reveal helpers */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 680ms cubic-bezier(.2,.9,.3,1),transform 680ms cubic-bezier(.2,.9,.3,1)}
+    .reveal-visible{opacity:1;transform:translateY(0)}
+
+    /* contact row style */
+    .contact-row{display:flex;gap:10px;align-items:center}
+
+    /* discord icon size */
+    .discord-icon{width:20px;height:20px;display:inline-block;vertical-align:middle}
+
+    /* responsive */
+    @media (max-width:920px){
+      nav{inset:auto 12px 0 12px}
+      .nav-inner{gap:12px;padding:6px 10px}
+      .bubble{display:none}
+    }
+    @media (max-width:600px){
+      header{padding-top:28px}
+      .projects-grid{gap:14px}
+      section{padding:48px 18px}
+      .card::after{display:none}
+      #particles{opacity:0.10}
+      #nameParticles{display:none} /* disable expensive hero particles on tiny screens */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- global particles canvas -->
+  <canvas id="particles"></canvas>
+
+  <!-- soft blended blobs -->
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner" id="navInner">
+      <div class="bubble" id="bubble"></div>
+      <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="#projects">Projects</a>
+      <a class="nav-link" href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header>
+    <!-- name particle canvas — sits under the text so particles glow behind and around it -->
+    <canvas id="nameParticles" width="900" height="220" aria-hidden="true" style="position:absolute;left:50%;top:41%;transform:translate(-50%,-41%);pointer-events:none;z-index:2"></canvas>
+
+    <h1 id="name">Hey! I'm Vale.</h1>
+    <h2>Developer • Designer • Builder</h2>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about" class="glass reveal">
+    <h3>About Me</h3>
+    <p>Hey! I'm Vale — a part-time programmer who loves building small projects, experimenting with C++, and creating clean visual designs. I'm also working on a small original game. Spoilers soon...</p>
+  </section>
+
+  <div class="divider" aria-hidden>
+    <svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0 C300,120 900,0 1200,120 L1200,0 L0,0 Z"></path></svg>
+  </div>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="glass reveal">
+    <h3>Projects</h3>
+
+    <div class="projects-grid">
+      <article class="card" data-index="0">
+        <div class="card-inner">
+          <h4>Project 1 — Surreal</h4>
+          <p>Surreal is my own little game made in Godot using C++ and GDScript. I started it during a boring week… and somehow it became something I actually care about.</p>
+        </div>
+      </article>
+
+      <article class="card" data-index="1">
+        <div class="card-inner">
+          <h4>Project 2 — Coming Soon</h4>
+        </div>
+      </article>
+
+      <article class="card" data-index="2">
+        <div class="card-inner">
+          <h4>Project 3 — Coming Soon</h4>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden>
+    <svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0 C400,120 800,0 1200,120 L1200,0 L0,0 Z"></path></svg>
+  </div>
+
+  <!-- CONTACT -->
+  <section id="contact" class="glass reveal">
+    <h3>Contact</h3>
+    <div class="contact-row">
+      <!-- inline discord SVG icon + username (falls back visually to simple text on old browsers) -->
+      <svg class="discord-icon" viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
+        <g fill="none" fill-rule="evenodd">
+          <path d="M60.104 4.5A58.6 58.6 0 0046.858.5 39.22 39.22 0 0041.47.5c-.21.34-.447.833-.614 1.184-1.89 4.3-3.995 8.35-5.71 12.212-7.54.54-9.78.54-17.35 0-1.724-3.88-3.85-7.9-5.76-12.2C22.78.832 22.55.34 22.34 0a39.22 39.22 0 00-5.39 0A58.6 58.6 0 005.325 4.5C.98 18.1-.418 31.6.8 44.884 15.206 52 29.743 54 44.9 54c15.16 0 29.7-2 43.5-9.116C71.42 31.6 69.97 18.1 60.104 4.5z" fill="#7289DA"/>
+          <path d="M47.969 36.5c-2.05 0-3.75-1.89-3.75-4.21 0-2.33 1.66-4.22 3.75-4.22 2.08 0 3.78 1.89 3.78 4.22 0 2.32-1.7 4.21-3.78 4.21zm-25.9 0c-2.05 0-3.75-1.89-3.75-4.21 0-2.33 1.66-4.22 3.75-4.22 2.08 0 3.78 1.89 3.78 4.22 0 2.32-1.7 4.21-3.78 4.21z" fill="#FFFFFF" opacity="0.98"/>
+        </g>
+      </svg>
+      <div style="color:var(--text);opacity:0.95">twistoox</div>
+    </div>
+    <p style="margin-top:12px;color:var(--muted)">Email: valetwisted@gmail.com</p>
+  </section>
+
+  <footer>© Vale — Portfolio</footer>
+
+  <script>
+    /* ---------------- particles (subtle & perf-aware) ---------------- */
+    (function(){
+      const canvas = document.getElementById('particles');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w=canvas.width=innerWidth, h=canvas.height=innerHeight;
+      const isMobile = innerWidth < 700;
+      const P = isMobile ? 36 : 84;
+      const particles = [];
+      for(let i=0;i<P;i++){
+        particles.push({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          r: Math.random()*1.4 + 0.4,
+          vx: (Math.random()-0.5) * (isMobile ? 0.12 : 0.28),
+          vy: (Math.random()-0.5) * (isMobile ? 0.12 : 0.28),
+          opacity: Math.random()*0.55 + 0.12
+        });
+      }
+      function step(){
+        ctx.clearRect(0,0,w,h);
+        for(const p of particles){
+          p.x += p.vx;
+          p.y += p.vy;
+          if(p.x < -10) p.x = w+10;
+          if(p.x > w+10) p.x = -10;
+          if(p.y < -10) p.y = h+10;
+          if(p.y > h+10) p.y = -10;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,230,200,${p.opacity})`;
+          ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+          ctx.fill();
+        }
+        requestAnimationFrame(step);
+      }
+      step();
+      addEventListener('resize', ()=>{ w=canvas.width=innerWidth; h=canvas.height=innerHeight; });
+    })();
+
+    /* ---------------- name particle ring + glow ---------------- */
+    (function(){
+      const canvas = document.getElementById('nameParticles');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      // adapt size to viewport / hero text
+      function resize(){
+        const baseW = Math.min(innerWidth * 0.92, 960);
+        const baseH = Math.min(240, innerHeight * 0.32);
+        canvas.width = baseW;
+        canvas.height = baseH;
+        canvas.style.width = baseW + 'px';
+        canvas.style.height = baseH + 'px';
+        // center is half width/height
+      }
+      resize(); window.addEventListener('resize', resize);
+
+      const isMobile = innerWidth < 700;
+      if(isMobile) {
+        // reduce particles on mobile for perf
+      }
+      const count = isMobile ? 18 : 48;
+      const particles = [];
+      for(let i=0;i<count;i++){
+        const angle = Math.random() * Math.PI * 2;
+        const radius = (Math.min(canvas.width, canvas.height) * 0.28) + (Math.random()*18 - 8);
+        particles.push({
+          angle,
+          radius,
+          speed: (0.0006 + Math.random()*0.0010) * (Math.random() > 0.5 ? 1 : -1),
+          size: Math.random()*1.6 + 0.6,
+          offset: (Math.random()*6 - 3)
+        });
+      }
+
+      let last = performance.now();
+      function draw(now){
+        const dt = now - last; last = now;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        // center: align with text center
+        const rect = document.getElementById('name').getBoundingClientRect();
+        // compute global offset wrt canvas
+        // position of canvas on page:
+        const canvasRect = canvas.getBoundingClientRect();
+        const cx = rect.left + rect.width/2 - canvasRect.left;
+        const cy = rect.top + rect.height/2 - canvasRect.top;
+
+        // soft radial glow
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height)*0.7);
+        g.addColorStop(0, 'rgba(217,160,100,0.12)');
+        g.addColorStop(0.2, 'rgba(217,160,100,0.06)');
+        g.addColorStop(1, 'rgba(217,160,100,0.0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        // small particles orbiting + twinkle
+        for(const p of particles){
+          p.angle += p.speed * dt;
+          const x = cx + Math.cos(p.angle) * p.radius + (Math.sin(now/1200 + p.offset) * 1.8);
+          const y = cy + Math.sin(p.angle) * p.radius + (Math.cos(now/1000 + p.offset) * 1.2);
+          const size = p.size * (1 + 0.3*Math.sin(now/300 + p.offset));
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,235,195,${0.3 + Math.abs(Math.sin(now/700 + p.offset))*0.5})`;
+          ctx.arc(x,y,size,0,Math.PI*2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+    })();
+
+    /* ---------------- nav bubble with inertia + stretch ---------------- */
+    (function(){
+      const bubble = document.getElementById('bubble');
+      const nav = document.getElementById('navInner');
+      const links = Array.from(nav.querySelectorAll('.nav-link'));
+      if(!bubble || !nav) return;
+      let target = {x:0,w:48,opacity:0}, current = {x:0,w:48,opacity:0};
+
+      function lerp(a,b,t){return a + (b-a) * t;}
+
+      links.forEach(link => {
+        link.addEventListener('mouseenter', e=>{
+          const r = e.target.getBoundingClientRect();
+          const parent = nav.getBoundingClientRect();
+          target.x = r.left - parent.left - 8;
+          target.w = Math.max(48, r.width + 16);
+          target.opacity = 1;
+        });
+      });
+
+      nav.addEventListener('mouseleave', ()=> { target.opacity = 0; });
+
+      (function animate(){
+        current.x = lerp(current.x, target.x, 0.22);
+        current.w = lerp(current.w, target.w, 0.22);
+        current.opacity = lerp(current.opacity, target.opacity, 0.18);
+        bubble.style.left = current.x + 'px';
+        bubble.style.width = Math.max(48, current.w) + 'px';
+        bubble.style.opacity = current.opacity;
+        requestAnimationFrame(animate);
+      })();
+    })();
+
+    /* ---------------- reveal on scroll (smooth) ---------------- */
+    (function(){
+      const toReveal = document.querySelectorAll('.reveal');
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(en => {
+          if(en.isIntersecting){
+            en.target.classList.add('reveal-visible');
+            if(en.target.classList.contains('glass')){
+              const cards = en.target.querySelectorAll('.card');
+              cards.forEach((c,i)=> setTimeout(()=> c.classList.add('reveal-visible'), i*90));
+            }
+          }
+        });
+      }, { threshold: 0.14 });
+      toReveal.forEach(n => io.observe(n));
+    })();
+
+    /* ---------------- magnetic card hover ---------------- */
+    (function(){
+      const cards = document.querySelectorAll('.card');
+      if(!cards.length) return;
+      cards.forEach(card => {
+        const inner = card.querySelector('.card-inner') || (function(){ const d=document.createElement('div'); d.className='card-inner'; while(card.firstChild) d.appendChild(card.firstChild); card.appendChild(d); return d; })();
+        card.addEventListener('mousemove', e=>{
+          const rect = card.getBoundingClientRect();
+          const cx = rect.left + rect.width/2;
+          const cy = rect.top + rect.height/2;
+          const dx = e.clientX - cx;
+          const dy = e.clientY - cy;
+          const rx = dx / rect.width;
+          const ry = dy / rect.height;
+          const tx = rx * 12; // horizontal move
+          const ty = ry * 8;  // vertical move
+          inner.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+        });
+        card.addEventListener('mouseleave', ()=>{
+          inner.style.transform = 'translate3d(0,0,0)';
+        });
+      });
+    })();
+
+    /* ---------------- simple subtle parallax for blobs & background on mouse ---------------- */
+    (function(){
+      const b1 = document.querySelector('.b1');
+      const b2 = document.querySelector('.b2');
+      const b3 = document.querySelector('.b3');
+      if(!(b1 && b2 && b3)) return;
+      window.addEventListener('mousemove', (e)=>{
+        const x = (e.clientX / innerWidth) - 0.5;
+        const y = (e.clientY / innerHeight) - 0.5;
+        b1.style.transform = `translate(${x*18}px, ${y*12}px)`;
+        b2.style.transform = `translate(${x*-28}px, ${y*-20}px)`;
+        b3.style.transform = `translate(${x*22}px, ${y*-14}px)`;
+      });
+    })();
+
+    /* ---------------- small mobile/resize optimizations ---------------- */
+    (function(){
+      function optimize(){
+        if(innerWidth < 700){
+          document.getElementById('particles').style.opacity = '0.10';
+          const np = document.getElementById('nameParticles');
+          if(np) np.style.display = 'none';
+        } else {
+          document.getElementById('particles').style.opacity = '0.14';
+          const np = document.getElementById('nameParticles');
+          if(np) np.style.display = 'block';
+        }
+      }
+      addEventListener('resize', optimize);
+      optimize();
+    })();
+
+    /* ---------------- animate the name glow once (adds class) ---------------- */
+    (function(){
+      const name = document.getElementById('name');
+      if(name) {
+        name.classList.add('pulse');
+      }
+    })();
+  </script>
+</body>
+</html>
