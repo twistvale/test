@@ -1,233 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vale — Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --cream: #f4d9b1;
-      --cream-soft: #e6c59c;
-      --coffee-dark: #1a120d;
-      --coffee-mid: #2b1a12;
-      --accent: #d9a066;
-      --text: #f7efe6;
-      --muted: #c4b6a7;
-
-      --glass-weak: rgba(255,255,255,0.045);
-      --glass-mid: rgba(255,255,255,0.08);
-      --glass-strong: rgba(255,255,255,0.14);
-
-      --transition-fast: 160ms;
-      --transition-med: 280ms;
-      --transition-slow: 520ms;
-    }
-
-    /* base */
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family:"Sora",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
-      /* improved coffee blend:
-         - warm base gradient
-         - subtle nebula tint overlay
-         - light vignette for focus
-      */
-      background:
-        radial-gradient(950px 480px at 8% 8%, rgba(255,220,170,0.06), transparent 16%),
-        radial-gradient(700px 520px at 92% 78%, rgba(200,120,255,0.02), transparent 20%),
-        linear-gradient(140deg, #f7e0bb 0%, #e2c39a 14%, #c79b6a 30%, var(--coffee-mid) 60%, var(--coffee-dark) 100%);
-      transition: background 700ms ease;
-    }
-
-    /* subtle grain overlay using pseudo-element on body */
-    body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:0.03;
-      background-image:linear-gradient( rgba(0,0,0,0.01) 1px, transparent 1px );
-      background-size:100% 2px;
-      z-index:1;
-      mix-blend-mode:overlay;
-    }
-
-    /* canvas particles container (global) */
-    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:0.14}
-
-    /* decorative blobs */
-    .blob{position:fixed;border-radius:50%;filter:blur(160px);pointer-events:none;opacity:0.26;will-change:transform;z-index:1}
-    .blob.b1{width:520px;height:520px;left:-220px;top:-160px;background:rgba(255,220,160,0.12)}
-    .blob.b2{width:600px;height:600px;right:-220px;bottom:-160px;background:rgba(200,140,255,0.08)}
-    .blob.b3{width:380px;height:380px;right:30%;top:24%;background:rgba(255,170,110,0.06)}
-
-    /* nav */
-    nav{
-      position:fixed;inset:auto 20px 0 20px;height:68px;display:flex;align-items:center;justify-content:center;z-index:1200;
-      pointer-events:auto;
-    }
-    .nav-inner{
-      position:relative;display:flex;gap:22px;align-items:center;padding:8px 18px;border-radius:14px;
-      background:linear-gradient(180deg,var(--glass-weak),rgba(255,255,255,0.01));
-      backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,0.06);
-      box-shadow:0 8px 30px rgba(0,0,0,0.28);
-    }
-    .nav-link{
-      position:relative;padding:8px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:600;
-      transition:color var(--transition-fast), transform var(--transition-med);
-      z-index:3;cursor:pointer;font-size:0.98rem;
-    }
-    .nav-link:active{transform:translateY(1px)}
-    .nav-link:hover{color:var(--text);transform:translateY(-3px)}
-
-    /* bubble (iOS-style) */
-    .bubble{
-      position:absolute;top:6px;height:44px;border-radius:14px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
-      backdrop-filter: blur(22px) saturate(160%);
-      border:1px solid rgba(255,255,255,0.12);
-      box-shadow:0 10px 40px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.06);
-      transform-origin:left center;
-      transition:transform 220ms cubic-bezier(.22,.61,.36,1), width 220ms ease, left 220ms cubic-bezier(.22,.61,.36,1), opacity 120ms ease;
-      z-index:2;opacity:0;
-      will-change:transform,width,opacity,left;
-    }
-
-    /* hero */
-    header{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;z-index:2;padding:12px}
-    h1{
-      font-size:clamp(36px,8vw,72px);line-height:0.96;font-weight:700;
-      background:linear-gradient(90deg,var(--cream-soft),var(--cream));-webkit-background-clip:text;color:transparent;
-      transition:text-shadow var(--transition-med);
-      /* soft glow (base) */
-      text-shadow: 0 6px 28px rgba(217,160,100,0.06);
-      position:relative;
-      z-index:3;
-    }
-    /* animated subtle glow pulse */
-    @keyframes namePulse { 0%{text-shadow:0 6px 18px rgba(217,160,100,0.04)}50%{text-shadow:0 10px 40px rgba(217,160,100,0.10)}100%{text-shadow:0 6px 18px rgba(217,160,100,0.04)} }
-    h1.pulse{animation:namePulse 3.6s ease-in-out infinite}
-
-    h2{margin-top:14px;color:var(--muted);font-weight:300}
-
-    /* name particle canvas sits over header, but behind text for glow */
-    #nameParticles{position:absolute;left:50%;top:45%;transform:translate(-50%,-45%);pointer-events:none;z-index:2}
-
-    /* sections */
-    section{max-width:1050px;margin:0 auto;padding:90px 22px;position:relative;z-index:2}
-    h3{font-size:2.1rem;color:var(--cream);margin-bottom:12px}
-
-    /* glass wrapper */
-    .glass{
-      background:linear-gradient(180deg,var(--glass-weak),rgba(255,255,255,0.02));
-      border-radius:18px;padding:28px;border:1px solid rgba(255,255,255,0.08);
-      backdrop-filter:blur(18px) saturate(150%);transition:transform var(--transition-med) cubic-bezier(.22,.61,.36,1),box-shadow var(--transition-med);
-      box-shadow:0 10px 30px rgba(0,0,0,0.35);
-    }
-    .glass.reveal-visible{transform:translateY(0);opacity:1}
-    .glass.hidden{transform:translateY(20px);opacity:0}
-
-    /* projects grid & cards */
-    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:14px}
-    .card{
-      position:relative;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-      border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.08);
-      overflow:hidden;transition:transform 360ms cubic-bezier(.22,.61,.36,1),box-shadow 360ms,filter 360ms;
-      will-change:transform,filter;
-      cursor:default;
-    }
-    .card::after{content:"";position:absolute;right:-30px;top:-20px;width:160px;height:110px;border-radius:40px;background:radial-gradient(circle at 30% 30%, rgba(255,200,120,0.12), rgba(255,160,100,0.02));filter:blur(18px);pointer-events:none;opacity:0.85}
-    .card h4{color:var(--cream);margin-bottom:8px}
-    .card p{color:var(--text);opacity:0.95}
-
-    /* magnetic hover (card inner follows cursor) */
-    .card .card-inner{transition:transform 320ms cubic-bezier(.22,.61,.36,1);will-change:transform}
-
-    .card:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 22px 60px rgba(0,0,0,0.46);filter:contrast(1.02)}
-    .card:active{transform:translateY(-6px) scale(1.01)}
-
-    /* divider wave */
-    .divider{height:72px;overflow:hidden;margin-top:22px}
-    .divider svg{display:block;width:120%;height:100%;transform:translateX(-10%)}
-    .divider path{fill:rgba(255,255,255,0.03)}
-
-    /* neon footer line */
-    footer{padding:40px 22px;text-align:center;color:var(--muted);position:relative}
-    footer::before{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:120px;height:2px;background:linear-gradient(90deg, rgba(217,160,100,0.0), rgba(217,160,100,0.9), rgba(217,160,100,0.0));box-shadow:0 6px 18px rgba(217,160,100,0.12)}
-
-    /* reveal helpers */
-    .reveal{opacity:0;transform:translateY(18px);transition:opacity 680ms cubic-bezier(.2,.9,.3,1),transform 680ms cubic-bezier(.2,.9,.3,1)}
-    .reveal-visible{opacity:1;transform:translateY(0)}
-
-    /* contact row style */
-    .contact-row{display:flex;gap:10px;align-items:center}
-
-    /* discord icon size */
-    .discord-icon{width:20px;height:20px;display:inline-block;vertical-align:middle}
-
-    /* responsive */
-    @media (max-width:920px){
-      nav{inset:auto 12px 0 12px}
-      .nav-inner{gap:12px;padding:6px 10px}
-      .bubble{display:none}
-    }
-    @media (max-width:600px){
-      header{padding-top:28px}
-      .projects-grid{gap:14px}
-      section{padding:48px 18px}
-      .card::after{display:none}
-      #particles{opacity:0.10}
-      #nameParticles{display:none} /* disable expensive hero particles on tiny screens */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Explorer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- global particles canvas -->
-  <canvas id="particles"></canvas>
+    <header>
+        <h1>Quantum Explorer</h1>
+        <p>Generate a random point near you using pseudo-randomness.</p>
+    </header>
 
-  <!-- soft blended blobs -->
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-
-  <!-- NAV -->
-  <nav>
-    <div class="nav-inner" id="navInner">
-      <div class="bubble" id="bubble"></div>
-      <a class="nav-link" href="#about">About</a>
-      <a class="nav-link" href="#projects">Projects</a>
-      <a class="nav-link" href="#contact">Contact</a>
+    <div id="controls">
+        <label for="radius">Exploration Radius (meters):</label>
+        <input type="number" id="radius" value="1000" min="50">
+        <button id="generateBtn">Generate Point</button>
+        <p id="status"></p>
     </div>
-  </nav>
 
-  <!-- HERO -->
-  <header>
-    <!-- name particle canvas — sits under the text so particles glow behind and around it -->
-    <canvas id="nameParticles" width="900" height="220" aria-hidden="true" style="position:absolute;left:50%;top:41%;transform:translate(-50%,-41%);pointer-events:none;z-index:2"></canvas>
+    <div id="map"></div>
 
-    <h1 id="name">Hey! I'm Vale.</h1>
-    <h2>Developer • Designer • Builder</h2>
-  </header>
-
-  <!-- ABOUT -->
-  <section id="about" class="glass reveal">
-    <h3>About Me</h3>
-    <p>Hey! I'm Vale — a part-time programmer who loves building small projects, experimenting with C++, and creating clean visual designs. I'm also working on a small original game. Spoilers soon...</p>
-  </section>
-
-  <div class="divider" aria-hidden>
-    <svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0 C300,120 900,0 1200,120 L1200,0 L0,0 Z"></path></svg>
-  </div>
-
-  <!-- PROJECTS -->
-  <section id="projects" class="glass reveal">
-    <h3>Projects</h3>
-
-    <div class="projects-grid">
-      <article class="card" data-index="0">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20n6aGg6KrHkGkM8l6FzT4jYmRk+m4oQ2zQh5W1r5oXo="
+        crossorigin=""></script>
+    <script src="script.js"></script>
+</body>
+</html>
+"0">
         <div class="card-inner">
           <h4>Project 1 — Surreal</h4>
           <p>Surreal is my own little game made in Godot using C++ and GDScript. I started it during a boring week… and somehow it became something I actually care about.</p>
